@@ -1,0 +1,52 @@
+services:
+  chatbot-service:
+    build: ./chatbot-service
+    env_file:
+      - .env.shared
+    ports:
+      - "8091:5000"
+
+  gateway-service:
+    build: ./gateway-service
+    env_file:
+      - .env.shared
+    ports:
+      - "8090:3000"
+
+  notification-service:
+    build: ./notification-service
+    env_file:
+      - .env.shared
+    ports:
+      - "8092:5000"
+
+  user-service:
+    build: ./user-service
+    volumes:
+    - ./user-service:/var/www/html
+    env_file:
+      - .env.shared
+    ports:
+      - "8093:80"
+    depends_on:
+      - mysql
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "3309:3309"
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6380:6380"
