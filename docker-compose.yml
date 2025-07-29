@@ -1,52 +1,57 @@
+version: '3.8'
+
 services:
-  chatbot-service:
-    build: ./chatbot-service
-    env_file:
-      - .env.shared
+  # Frontend Service (Vue.js served by Nginx)
+  frontend-service:
+    build:
+      context: ./frontend-service
     ports:
-      - "8091:5000"
-
-  gateway-service:
-    build: ./gateway-service
-    env_file:
-      - .env.shared
-    ports:
-      - "8090:3000"
-
-  notification-service:
-    build: ./notification-service
-    env_file:
-      - .env.shared
-    ports:
-      - "8092:5000"
-
-  user-service:
-    build: ./user-service
-    volumes:
-    - ./user-service:/var/www/html
-    env_file:
-      - .env.shared
-    ports:
-      - "8093:80"
+      - "8090:80" # Expose on port 8090 to avoid conflict
     depends_on:
-      - mysql
+      - gateway-service
 
+  # Gateway Service (Node.js)
+  gateway-service:
+    build:
+      context: ./gateway-service
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.docker
+    command: npm run dev
+    depends_on:
+      - user-service
+      - chatbot-service
+
+  # User Service (Laravel/PHP)
+  user-service:
+    build:
+      context: ./user-service
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.docker
+    volumes:
+      - ./user-service:/var/www/html
+    command: php artisan serve --host=0.0.0.0 --port=8000
+
+  # Chatbot Service (Python/Flask)
+  chatbot-service:
+    build:
+      context: ./chatbot-service
+    ports:
+      - "5001:5001"
+    env_file:
+      - .env.docker
+    command: python3 app.py
+
+  # Monitoring (Optional)
   grafana:
     image: grafana/grafana
     ports:
-      - "3000:3000"
+      - "3001:3000" # Use 3001 to avoid conflict with gateway
 
   prometheus:
     image: prom/prometheus
     ports:
       - "9090:9090"
-
-  mysql:
-    image: mysql:8.0
-    ports:
-      - "3309:3309"
-
-  redis:
-    image: redis:alpine
-    ports:
-      - "6380:6380"

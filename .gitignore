@@ -1,1 +1,41 @@
-.env.shared
+# Dependencies
+/node_modules
+/user-service/vendor
+/user-service/node_modules
+/gateway-service/node_modules
+/frontend-service/node_modules
+
+# Environment Files
+# Ignore all .env files in all subdirectories
+**/.env
+.env.docker
+
+# Laravel / PHP
+/user-service/public/build
+/user-service/public/hot
+/user-service/storage/logs/laravel.log
+/user-service/database/database.sqlite
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS-specific
+.DS_Store
+Thumbs.db
+.AppleDouble
+.LSOverride
+
+# IDEs
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
