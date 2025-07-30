@@ -10,7 +10,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // --- CORS Configuration ---
-// We will allow requests from the frontend running on port 8081
+// We will allow requests from the frontend running on port 8090
 const corsOptions = {
   origin: 'http://localhost:8090',
   optionsSuccessStatus: 200 // For legacy browser support
