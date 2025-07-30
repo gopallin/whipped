@@ -31,4 +31,16 @@ To ensure consistency, we will use industry-standard formatters and linters for 
 -   **Test for Extensibility:** Tests should be written in a way that they don't break when unrelated changes are made. Use mocking and dependency injection to isolate the code under test.
 -   **Focus on Business Logic:** Prioritize testing the core logic of each service rather than framework-specific implementations.
 
+## 5. Key Architectural Patterns
+
+### 5.1 Real-Time Response Streaming
+To ensure a highly responsive user experience, the application uses an end-to-end streaming architecture for AI interactions.
+
+-   **Concept:** Instead of waiting for the AI to generate a complete response, the backend requests a stream from the AI. The backend then immediately forwards the response to the frontend chunk-by-chunk. The frontend, in turn, progressively renders the text as it arrives.
+-   **Benefit:** This makes the application feel significantly faster and more interactive, as the user sees the beginning of the response almost instantly.
+-   **Implementation:**
+    -   **Backend (`chatbot-service`):** Use `stream=True` when calling the Gemini API and use a generator (`yield`) to stream the response through a Flask `Response` object.
+    -   **Frontend (`frontend-service`):** Use the `fetch` API to read the streaming response body and update the UI dynamically as new data chunks are received.
+-   **Guideline:** When adding new AI-powered features, this streaming pattern should be the default choice to maintain a high-quality user experience.
+
 By following these guidelines, we will build a robust and scalable application together.

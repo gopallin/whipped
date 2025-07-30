@@ -8,6 +8,7 @@ from .prompt_template import PROMPT_TEXT
 SUPPORTED_MODELS = [
     'gemini-1.5-flash',
     'gemini-1.0-pro',
+    'gemini-pro',
 ]
 
 def get_ai_translation(user_message, logger):
@@ -21,8 +22,8 @@ def get_ai_translation(user_message, logger):
         logger.info(f"Attempting to use model: {model_name} for streaming")
         try:
             model = genai.GenerativeModel(model_name)
-            # Set a 30-second timeout for the entire stream
-            request_options = {"timeout": 30}
+            # Set a 60-second timeout for the entire stream
+            request_options = {"timeout": 60}
             responses = model.generate_content(
                 prompt,
                 stream=True,

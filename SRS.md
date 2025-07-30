@@ -81,6 +81,8 @@ The primary user is anyone looking for a quick and easy way to interact with a g
 -   **Input/Output Logic:**
     -   **Input:** A statement from the "girlfriend."
     -   **Output:** The translated "inner voice" of that statement, revealing the true meaning or desire.
+-   **Non-Functional Requirements:**
+    -   **Performance:** AI responses shall be streamed to the user interface in real-time. The system should not wait for the entire response to be generated before displaying the first part of it, ensuring a responsive user experience.
 -   **Example Scenario:**
     -   **User Input:** "Oh, what bad weather."
     -   **Expected AI Response:** "The user means that they do not want to go out for lunch, and you should cook for them."

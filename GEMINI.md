@@ -126,3 +126,83 @@ Run these commands from within the respective service's directory to ensure code
 -   **Gemini API Key:** The API key for the AI is stored in `chatbot-service/.env` under the variable `GEMINI_API_KEY`.
 -   **Database:** The `user-service` uses a SQLite database located at `user-service/database/database.sqlite`.
 -   **Service URLs:** The `gateway-service` finds other services using the URLs in its `.env` file.
+
+## 8. Core Architecture: End-to-End Response Streaming
+
+To provide a real-time, responsive user experience, the application implements an end-to-end streaming architecture. Instead of making the user wait for the AI to generate a full response, we stream the response token-by-token from the AI, through our backend, and directly to the user's browser.
+
+### 8.1 How It Works: A Step-by-Step Explanation
+
+Imagine the user types a message and hits "Send".
+
+1.  **`ChatView.vue` (The UI):**
+    *   The `sendMessage` method is called.
+    *   It immediately adds the user's message and an empty AI message placeholder to the chat window.
+    *   It then calls the `api.streamChat` function, providing a callback that will append incoming text to the AI message placeholder.
+
+2.  **`api.js` (The Frontend's API Service):**
+    *   The `streamChat` function uses the browser's native `fetch` API to make a `POST` request to the `gateway-service`.
+    *   It gets a `ReadableStream` from the response body and uses a `while` loop to read chunks of data as they arrive.
+    *   Each chunk is decoded into text and passed to the callback function from `ChatView.vue`, which updates the UI in real-time.
+
+3.  **`routes.py` (The Chatbot Service's API):**
+    *   The `/api/chat` endpoint receives the request.
+    *   Instead of calling the AI handler and waiting for a complete string, it returns a Flask `Response` object configured to stream.
+    *   It uses a generator function that calls the `ai_handler` and `yields` each chunk of text it receives.
+
+4.  **`ai_handler.py` (The AI Communicator):**
+    *   This is where the streaming originates. The `generate_content` call to the Google Gemini API includes the parameter `stream=True`.
+    *   This tells the Gemini API to send back each part of the response as soon as it's generated.
+    *   The function uses a `for` loop to iterate over the streaming response from the AI and `yields` each piece back to the `routes.py` generator.
+
+This creates a continuous flow of data from the AI to the user's screen, making the application feel instantaneous.
+
+### 8.2 Key Code Snippets
+
+**`ai_handler.py`: Requesting the stream from Gemini**
+```python
+responses = model.generate_content(
+    prompt,
+    stream=True, # Tells the AI to stream its response
+    request_options={"timeout": 60}
+)
+for response in responses:
+    yield response.text # Yields each chunk as it arrives
+```
+
+**`routes.py`: Streaming the response from Flask**
+```python
+def generate():
+    for chunk in get_ai_translation(user_message, current_app.logger):
+        yield chunk
+
+# Return a streaming response instead of a JSON object
+return Response(stream_with_context(generate()), mimetype='text/plain')
+```
+
+**`api.js`: Reading the stream on the frontend**
+```javascript
+const reader = response.body.getReader();
+const decoder = new TextDecoder();
+
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break; // Stream is finished
+  const chunk = decoder.decode(value, { stream: true });
+  onChunkReceived(chunk); // Pass the chunk to the UI
+}
+```
+
+**`ChatView.vue`: Updating the UI with the stream**
+```javascript
+// In sendMessage():
+const aiResponse = { id: Date.now() + 1, text: '', sender: 'ai' };
+messages.value.push(aiResponse);
+
+await api.streamChat(messageToSend, (chunk) => {
+  const targetMessage = messages.value.find(m => m.id === aiResponse.id);
+  if (targetMessage) {
+    targetMessage.text += chunk; // Append the new chunk to the message text
+  }
+});
+```
