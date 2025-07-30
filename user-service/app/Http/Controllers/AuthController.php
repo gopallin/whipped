@@ -43,9 +43,9 @@ class AuthController extends Controller
         }
 
         $user = User::create(array_merge(
-                    $validator->validated(),
-                    ['password' => Hash::make($request->password)]
-                ));
+            $validator->validated(),
+            ['password' => Hash::make($request->password)],
+        ));
 
         return response()->json([
             'message' => 'User successfully registered',
