@@ -99,23 +99,30 @@ const sendMessage = async () => {
   newMessage.value = '';
   isLoading.value = true;
 
+  // Create a placeholder for the AI's response
+  const aiResponse = {
+    id: Date.now() + 1,
+    text: '', // Start with empty text
+    sender: 'ai',
+  };
+  messages.value.push(aiResponse);
+
   try {
-    const response = await api.sendMessage(messageToSend);
-    const aiResponse = {
-      id: Date.now() + 1,
-      text: response.data.ai_response,
-      sender: 'ai',
-    };
-    messages.value.push(aiResponse);
+    // Use the new streaming API
+    await api.streamChat(messageToSend, (chunk) => {
+      // Find the AI message placeholder and append the chunk
+      const targetMessage = messages.value.find(m => m.id === aiResponse.id);
+      if (targetMessage) {
+        targetMessage.text += chunk;
+      }
+    });
   } catch (error) {
     console.error('Error sending message:', error);
-    const errorResponse = {
-      id: Date.now() + 1,
-      text: 'Sorry, something went wrong.',
-      sender: 'ai',
-      isError: true,
-    };
-    messages.value.push(errorResponse);
+    const targetMessage = messages.value.find(m => m.id === aiResponse.id);
+    if (targetMessage) {
+      targetMessage.text = 'Sorry, something went wrong.';
+      targetMessage.isError = true;
+    }
   } finally {
     isLoading.value = false;
   }
@@ -129,7 +136,7 @@ const sendMessage = async () => {
       <div v-for="message in messages" :key="message.id" class="message" :class="['message-' + message.sender, { 'message-error': message.isError }]">
         <p>{{ message.text }}</p>
       </div>
-      <div v-if="isLoading" class="message message-ai">
+      <div v-if="isLoading && messages.length === 0" class="message message-ai">
         <p>...</p>
       </div>
     </div>
