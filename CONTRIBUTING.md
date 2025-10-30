@@ -30,6 +30,8 @@ To ensure consistency, we will use industry-standard formatters and linters for 
 -   **Unit Tests are Required:** All new features, especially business logic, must be accompanied by unit tests.
 -   **Test for Extensibility:** Tests should be written in a way that they don't break when unrelated changes are made. Use mocking and dependency injection to isolate the code under test.
 -   **Focus on Business Logic:** Prioritize testing the core logic of each service rather than framework-specific implementations.
+-   **Comprehensive Testing for New Features & Integrations:** For any new feature or external integration (e.g., LINE bot), ensure thorough unit and integration tests are developed. This includes testing various scenarios, edge cases, and error conditions.
+-   **Robust Error Handling:** Implement detailed and informative error handling for all new components and integrations. Errors should be gracefully managed, providing clear feedback to users where appropriate and detailed logging for debugging purposes.
 
 ## 5. Key Architectural Patterns
 

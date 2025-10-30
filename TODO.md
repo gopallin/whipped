@@ -66,13 +66,19 @@ This document outlines the step-by-step development plan for the Whipped applica
         -   **Deadline:** N/A
     -   [x] 5C.2 Implement logic in `user-service` to store/retrieve LINE user IDs.
     -   [x] 5C.3 Update `gateway-service` to interact with `user-service` for LINE user management.
--   [ ] **5D. Deployment & Configuration**
-    -   [ ] 5D.1 Add LINE Channel Access Token and Channel Secret to `gateway-service/.env.example` and `.env`.
-    -   [ ] 5D.2 Update Docker Compose to expose the LINE webhook endpoint if necessary.
-    -   [ ] 5D.3 Configure LINE Developers Console with the webhook URL.
+-   [x] **5F. Code Review Feedback - Refactoring & Enhancements**
+    -   [x] 5F.1 Refactor `gateway-service/src/index.ts` for Clarity and Maintainability (Extract `handleLineEvent` logic).
+    -   [x] 5F.2 Enhance Error Handling in `gateway-service` (Provide more granular error messages).
+    -   [x] 5F.3 Implement Comprehensive Unit and Integration Tests for LINE bot functionality (Unit tests implemented and passing).
+    -   [x] 5F.4 Clarify Chatbot Service Conversation Context (Implemented conversation history management in `gateway-service`).
+    -   [x] 5F.5 Address Duplicate Variable Definitions in `gateway-service/src/index.ts`.
 -   [ ] **5E. Testing & Refinement**
     -   [ ] 5E.1 Develop unit/integration tests for LINE webhook and message handling.
     -   [ ] 5E.2 Manual testing of LINE bot functionality.
     -   [ ] 5E.3 Refine error handling and user feedback for LINE.
+-   [ ] **5D. Deployment & Configuration**
+    -   [ ] 5D.1 Add LINE Channel Access Token and Channel Secret to `gateway-service/.env.example` and `.env`.
+    -   [ ] 5D.2 Update Docker Compose to expose the LINE webhook endpoint if necessary.
+    -   [ ] 5D.3 Configure LINE Developers Console with the webhook URL.
 
 ---

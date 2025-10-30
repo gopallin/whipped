@@ -173,6 +173,15 @@ To expand the application's reach, a LINE bot integration will be developed. The
 
 This approach maximizes code reuse, centralizes management, and ensures consistent core logic across both web and LINE platforms.
 
+### 9.2 Quality Considerations for LINE Bot Integration
+
+Given the nature of external integrations, robust quality assurance is paramount for the LINE bot:
+
+-   **Comprehensive Testing:** Thorough unit and integration tests are essential to cover the full message lifecycle, from LINE webhook reception to AI response and LINE reply. This includes testing user creation/retrieval, chatbot interaction, and various message types.
+-   **Robust Error Handling:** Implement detailed error handling at each stage of the LINE message processing. Generic error messages should be avoided in favor of specific, actionable feedback to the user and detailed logging for developers.
+-   **Conversation Context Management:** Carefully consider how conversation history is managed for LINE users. If the `chatbot-service` relies on full conversation context, the `gateway-service` must ensure this history is correctly maintained and passed for each LINE interaction.
+
+
 ## 10. Core Coding Principles
 
 To ensure a high-quality, maintainable, and extensible codebase, the following principles are paramount:
