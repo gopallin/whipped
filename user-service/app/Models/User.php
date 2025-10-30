@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Support\Str;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -22,6 +23,7 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'line_user_id',
     ];
 
     /**
@@ -65,5 +67,19 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    /**
+     * Find a user by line_user_id or create a new one.
+     *
+     * @param string $lineUserId
+     * @return User
+     */
+    public static function findOrCreateByLineUserId(string $lineUserId): User
+    {
+        return static::firstOrCreate(
+            ['line_user_id' => $lineUserId],
+            ['name' => 'LINE User', 'email' => $lineUserId . '@line.me', 'password' => bcrypt(Str::random(16))]
+        );
     }
 }

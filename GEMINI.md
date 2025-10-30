@@ -173,6 +173,16 @@ To expand the application's reach, a LINE bot integration will be developed. The
 
 This approach maximizes code reuse, centralizes management, and ensures consistent core logic across both web and LINE platforms.
 
+## 10. Core Coding Principles
+
+To ensure a high-quality, maintainable, and extensible codebase, the following principles are paramount:
+
+-   **SOLID Principles:** Adherence to SOLID principles (Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion) is crucial for designing robust and flexible software.
+-   **Simple and Reusable Components:** Components should be designed to be as simple as possible, focusing on a single responsibility, and easily reusable across different parts of the application or even in other projects.
+-   **Clarity and Readability:** Code should be clear, well-structured, and easy to understand by other developers. Avoid unnecessary complexity.
+
+This creates a continuous flow of data from the AI to the user's screen, making the application feel instantaneous.
+
 **`ai_handler.py`: Requesting the stream from Gemini (with conversation history)**
 ```python
 def get_ai_translation(messages, logger):

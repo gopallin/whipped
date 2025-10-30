@@ -65,6 +65,24 @@ class AuthController extends Controller
         return response()->json(['message' => 'Successfully logged out']);
     }
 
+    public function lineUser(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'lineUserId' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $lineUserId = $request->input('lineUserId');
+        $user = User::findOrCreateByLineUserId($lineUserId);
+
+        $token = Auth::login($user);
+
+        return $this->respondWithToken($token);
+    }
+
     protected function respondWithToken($token)
     {
         return response()->json([

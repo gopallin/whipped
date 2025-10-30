@@ -46,22 +46,26 @@ This document outlines the step-by-step development plan for the Whipped applica
 
 ## **Step 5: LINE Bot Integration (In Progress)**
 
--   [ ] **5A. Gateway Service - LINE Webhook Setup**
-    -   [ ] 5A.1 Research LINE Messaging API SDK for Node.js.
-    -   [ ] 5A.2 Install LINE SDK in `gateway-service`.
-    -   [ ] 5A.3 Create new endpoint `/webhook/line` in `gateway-service` to receive LINE events.
-    -   [ ] 5A.4 Implement basic webhook verification (signature check).
--   [ ] **5B. Gateway Service - Message Handling**
-    -   [ ] 5B.1 Parse incoming LINE message events (text messages).
-    -   [ ] 5B.2 Extract user ID and message text from LINE events.
-    -   [ ] 5B.3 Forward user message to `chatbot-service` (reusing existing `/api/chat` endpoint).
-    -   [ ] 5B.4 Receive AI response from `chatbot-service`.
-    -   [ ] 5B.5 Format AI response into a LINE text message object.
-    -   [ ] 5B.6 Send formatted message back to LINE Messaging API using SDK.
--   [ ] **5C. User Service - LINE User Management**
-    -   [ ] 5C.1 Design strategy for mapping LINE user IDs to existing `user-service` users or creating new ones.
-    -   [ ] 5C.2 Implement logic in `user-service` to store/retrieve LINE user IDs.
-    -   [ ] 5C.3 Update `gateway-service` to interact with `user-service` for LINE user management.
+-   [x] **5A. Gateway Service - LINE Webhook Setup**
+    -   [x] 5A.1 Research LINE Messaging API SDK for Node.js.
+    -   [x] 5A.2 Install LINE SDK in `gateway-service`.
+    -   [x] 5A.3 Create new endpoint `/webhook/line` in `gateway-service` to receive LINE events.
+    -   [x] 5A.4 Implement basic webhook verification (signature check).
+-   [x] **5B. Gateway Service - Message Handling**
+    -   [x] 5B.1 Parse incoming LINE message events (text messages).
+    -   [x] 5B.2 Extract user ID and message text from LINE events.
+    -   [x] 5B.3 Forward user message to `chatbot-service` (reusing existing `/api/chat` endpoint).
+    -   [x] 5B.4 Receive AI response from `chatbot-service`.
+    -   [x] 5B.5 Format AI response into a LINE text message object.
+    -   [x] 5B.6 Send formatted message back to LINE Messaging API using SDK.
+-   [x] **5C. User Service - LINE User Management**
+    -   [x] 5C.1 Design strategy for mapping LINE user IDs to existing `user-service` users or creating new ones.
+        -   **Title:** Design LINE user ID mapping strategy.
+        -   **Description:** Chosen strategy: Every unique LINE user ID will be treated as a distinct user in the `user-service`. Upon a LINE user's first interaction, a new user record will be created in the `user-service` using their LINE user ID as a unique identifier. Subsequent interactions will use this existing record.
+        -   **Assignee:** N/A
+        -   **Deadline:** N/A
+    -   [x] 5C.2 Implement logic in `user-service` to store/retrieve LINE user IDs.
+    -   [x] 5C.3 Update `gateway-service` to interact with `user-service` for LINE user management.
 -   [ ] **5D. Deployment & Configuration**
     -   [ ] 5D.1 Add LINE Channel Access Token and Channel Secret to `gateway-service/.env.example` and `.env`.
     -   [ ] 5D.2 Update Docker Compose to expose the LINE webhook endpoint if necessary.
