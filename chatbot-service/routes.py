@@ -12,14 +12,14 @@ def register_routes(app):
         """
         data = request.get_json()
 
-        if not data or 'message' not in data:
-            return jsonify({"error": "Invalid request. 'message' is required."}), 400
+        if not data or 'messages' not in data:
+            return jsonify({"error": "Invalid request. 'messages' is required."}), 400
 
-        user_message = data['message']
+        messages = data['messages']
         
         # The AI handler is now a generator, so we stream its response
         def generate():
-            for chunk in get_ai_translation(user_message, current_app.logger):
+            for chunk in get_ai_translation(messages, current_app.logger):
                 yield chunk
         
         # Return a streaming response

@@ -74,7 +74,7 @@ To run the entire application for development, execute the following commands fr
     npm install # If dependencies are not installed
     npm run dev
     ```
-    > The frontend is accessible at **http://localhost:5173**.
+    > The frontend is accessible at **http://localhost:8090**.
 
 ## 5. Docker Commands
 
@@ -146,34 +146,58 @@ Imagine the user types a message and hits "Send".
     *   Each chunk is decoded into text and passed to the callback function from `ChatView.vue`, which updates the UI in real-time.
 
 3.  **`routes.py` (The Chatbot Service's API):**
-    *   The `/api/chat` endpoint receives the request.
+    *   The `/api/chat` endpoint receives the request, which now includes the entire conversation history as a list of messages.
     *   Instead of calling the AI handler and waiting for a complete string, it returns a Flask `Response` object configured to stream.
     *   It uses a generator function that calls the `ai_handler` and `yields` each chunk of text it receives.
 
 4.  **`ai_handler.py` (The AI Communicator):**
     *   This is where the streaming originates. The `generate_content` call to the Google Gemini API includes the parameter `stream=True`.
     *   This tells the Gemini API to send back each part of the response as soon as it's generated.
+    *   The function constructs a prompt based on the entire conversation history provided by the frontend.
     *   The function uses a `for` loop to iterate over the streaming response from the AI and `yields` each piece back to the `routes.py` generator.
 
 This creates a continuous flow of data from the AI to the user's screen, making the application feel instantaneous.
 
 ### 8.2 Key Code Snippets
 
-**`ai_handler.py`: Requesting the stream from Gemini**
+**`ai_handler.py`: Requesting the stream from Gemini (with conversation history)**
 ```python
-responses = model.generate_content(
-    prompt,
-    stream=True, # Tells the AI to stream its response
-    request_options={"timeout": 60}
-)
-for response in responses:
-    yield response.text # Yields each chunk as it arrives
+def get_ai_translation(messages, logger):
+    prompt_parts = [
+        "You are an AI that translates what a high-maintenance girlfriend says into what she actually means.",
+        "Your job is to reveal the true, underlying meaning of her words.",
+        "Do not be conversational. Only provide the translation.",
+        "\nStatement: \"Oh, what bad weather.\"",
+        "Translation: \"The user means that they do not want to go out for lunch, and you should cook for them.\"",
+        "\nStatement: \"It's fine.\"",
+        "Translation: \"It is absolutely not fine. You need to figure out what you did wrong and apologize immediately.\"",
+        "\nStatement: \"I'm not hungry, you can have the last slice of pizza.\"",
+        "Translation: \"I am testing you. If you eat that last slice, you will regret it for the rest of the week.\""
+    ]
+
+    for message in messages:
+        if message['sender'] == 'user':
+            prompt_parts.append(f"\nStatement: \"{message['text']}\"")
+        elif message['sender'] == 'ai':
+            prompt_parts.append(f"Translation: \"{message['text']}\"")
+
+    prompt_parts.append("\nTranslation:")
+    prompt = '\n'.join(prompt_parts)
+
+    # ... (rest of the model selection and streaming logic)
+    responses = model.generate_content(
+        prompt,
+        stream=True, # Tells the AI to stream its response
+        request_options={"timeout": 60}
+    )
+    for response in responses:
+        yield response.text # Yields each chunk as it arrives
 ```
 
 **`routes.py`: Streaming the response from Flask**
 ```python
 def generate():
-    for chunk in get_ai_translation(user_message, current_app.logger):
+    for chunk in get_ai_translation(messages, current_app.logger):
         yield chunk
 
 # Return a streaming response instead of a JSON object
@@ -182,24 +206,41 @@ return Response(stream_with_context(generate()), mimetype='text/plain')
 
 **`api.js`: Reading the stream on the frontend**
 ```javascript
-const reader = response.body.getReader();
-const decoder = new TextDecoder();
+async streamChat(messages, onChunkReceived) {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/chatbot`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ messages }), // Send the entire messages array
+  });
 
-while (true) {
-  const { done, value } = await reader.read();
-  if (done) break; // Stream is finished
-  const chunk = decoder.decode(value, { stream: true });
-  onChunkReceived(chunk); // Pass the chunk to the UI
-}
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break; // Stream is finished
+    const chunk = decoder.decode(value, { stream: true });
+    onChunkReceived(chunk); // Pass the chunk to the UI
+  }
+},
 ```
 
 **`ChatView.vue`: Updating the UI with the stream**
 ```javascript
 // In sendMessage():
+const messageHistory = [...messages.value]; // Capture current history
 const aiResponse = { id: Date.now() + 1, text: '', sender: 'ai' };
 messages.value.push(aiResponse);
 
-await api.streamChat(messageToSend, (chunk) => {
+await api.streamChat(messageHistory, (chunk) => {
   const targetMessage = messages.value.find(m => m.id === aiResponse.id);
   if (targetMessage) {
     targetMessage.text += chunk; // Append the new chunk to the message text

@@ -6,17 +6,39 @@ from .prompt_template import PROMPT_TEXT
 
 # A list of models to try in order of preference.
 SUPPORTED_MODELS = [
-    'gemini-1.5-flash',
-    'gemini-1.0-pro',
-    'gemini-pro',
+    'gemini-pro-latest',
+    'gemini-flash-latest',
 ]
 
-def get_ai_translation(user_message, logger):
+def get_ai_translation(messages, logger):
     """
-    Uses the Gemini API to get the "inner voice" translation,
-    with a fallback mechanism, yielding the response as a stream.
+    Uses the Gemini API to get the "inner voice" translation, 
+    building context from a conversation history and yielding the response as a stream.
     """
-    prompt = PROMPT_TEXT.format(user_message=user_message)
+    # Start with the base prompt that sets the context
+    prompt_parts = [
+        "You are an AI that translates what a high-maintenance girlfriend says into what she actually means.",
+        "Your job is to reveal the true, underlying meaning of her words.",
+        "Do not be conversational. Only provide the translation.",
+        "\nStatement: \"Oh, what bad weather.\"",
+        "Translation: \"The user means that they do not want to go out for lunch, and you should cook for them.\"",
+        "\nStatement: \"It's fine.\"",
+        "Translation: \"It is absolutely not fine. You need to figure out what you did wrong and apologize immediately.\"",
+        "\nStatement: \"I'm not hungry, you can have the last slice of pizza.\"",
+        "Translation: \"I am testing you. If you eat that last slice, you will regret it for the rest of the week.\""
+    ]
+
+    # Build the conversation history from the messages
+    for message in messages:
+        if message['sender'] == 'user':
+            prompt_parts.append(f"\nStatement: \"{message['text']}\"")
+        elif message['sender'] == 'ai':
+            prompt_parts.append(f"Translation: \"{message['text']}\"")
+
+    # Add the final prompt for the AI to respond to
+    prompt_parts.append("\nTranslation:")
+    
+    prompt = '\n'.join(prompt_parts)
 
     for model_name in SUPPORTED_MODELS:
         logger.info(f"Attempting to use model: {model_name} for streaming")

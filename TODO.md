@@ -35,7 +35,8 @@ This document outlines the step-by-step development plan for the Whipped applica
 -   [x] **4B. Final Testing and Refinement**
 -   [x] **4C. Implement Auto-Stop for Voice Input**
 -   [x] **4D. Implement Auto-Send for Voice Input**
--   [ ] **4E. UI/UX Refinements (Current Task):**
+-   [x] **4E. Implement Conversation History**
+-   [ ] **4F. UI/UX Refinements (Current Task):**
     -   [ ] Implement a fixed header and footer layout.
     -   [ ] Implement automatic scrolling to the latest message.
 -   [ ] **4F. Cross-Browser Compatibility:**

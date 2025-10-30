@@ -23,7 +23,7 @@ const api = {
   login(credentials) {
     return apiClient.post('/api/user/login', credentials);
   },
-  async streamChat(message, onChunkReceived) {
+  async streamChat(messages, onChunkReceived) {
     const token = localStorage.getItem('token');
     const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/chatbot`, {
       method: 'POST',
@@ -31,7 +31,7 @@ const api = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify({ message }),
+      body: JSON.stringify({ messages }),
     });
 
     if (!response.ok) {

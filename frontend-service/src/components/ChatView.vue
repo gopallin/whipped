@@ -95,7 +95,7 @@ const sendMessage = async () => {
   };
   messages.value.push(userMessage);
 
-  const messageToSend = newMessage.value;
+  const messageHistory = [...messages.value];
   newMessage.value = '';
   isLoading.value = true;
 
@@ -108,8 +108,8 @@ const sendMessage = async () => {
   messages.value.push(aiResponse);
 
   try {
-    // Use the new streaming API
-    await api.streamChat(messageToSend, (chunk) => {
+    // Use the new streaming API, sending the history
+    await api.streamChat(messageHistory, (chunk) => {
       // Find the AI message placeholder and append the chunk
       const targetMessage = messages.value.find(m => m.id === aiResponse.id);
       if (targetMessage) {

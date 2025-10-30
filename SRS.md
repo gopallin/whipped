@@ -72,7 +72,7 @@ The primary user is anyone looking for a quick and easy way to interact with a g
 -   **Technology:** Python
 -   **Requirements:**
     -   Shall expose an API endpoint to receive user messages.
-    -   Shall process the message and interact with a third-party AI model to generate a response.
+    -   Shall process the message and interact with a third-party AI model to generate a response, maintaining conversation history for contextual responses.
     -   Shall return the AI-generated response to the caller.
 
 #### 3.3.1 Chatbot Personality and Behavior
