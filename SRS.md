@@ -93,3 +93,25 @@ The primary user is anyone looking for a quick and easy way to interact with a g
     -   Shall act as the single entry point for all frontend API calls.
     -   Shall route requests to the appropriate downstream service (e.g., `/api/user` to `user-service`, `/api/chat` to `chatbot-service`).
     -   Shall forward authentication tokens (JWTs) from the client to the services.
+
+### 3.5 LINE Bot Integration
+-   **Technology:** Node.js/TypeScript (leveraging `gateway-service`)
+-   **Requirements:**
+    -   Shall provide a webhook endpoint to receive messages and events from the LINE Messaging API.
+    -   Shall parse incoming LINE messages and extract user input.
+    -   Shall forward user input to the `chatbot-service` for processing.
+    -   Shall send AI-generated responses back to the LINE Messaging API.
+    -   Shall manage LINE user IDs, potentially linking them to existing user accounts in the `user-service`.
+    -   Shall support text-based interactions as the primary mode of communication.
+
+### 3.5 LINE Bot Integration
+-   **Technology:** Node.js/TypeScript (leveraging `gateway-service`)
+-   **Requirements:**
+    -   Shall provide a webhook endpoint to receive messages and events from the LINE Messaging API.
+    -   Shall parse incoming LINE messages and extract user input.
+    -   Shall forward user input to the `chatbot-service` for processing.
+    -   Shall send AI-generated responses back to the LINE Messaging API.
+    -   Shall manage LINE user IDs, potentially linking them to existing user accounts in the `user-service`.
+    -   Shall support text-based interactions as the primary mode of communication.
+
+

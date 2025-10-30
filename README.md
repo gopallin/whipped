@@ -8,6 +8,7 @@ Whipped is a fun, microservices-based web application that acts as a humorous "t
 -   **Streaming Responses:** The AI's response is streamed token-by-token, providing a real-time, responsive user experience.
 -   **Simple Chat Interface:** A clean, modern UI for text-based interaction.
 -   **Voice Input:** Voice-to-text transcription for hands-free use.
+-   **LINE Bot Integration:** Seamless interaction via LINE messaging platform.
 
 ## 🛠️ Tech Stack
 

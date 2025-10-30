@@ -156,9 +156,22 @@ Imagine the user types a message and hits "Send".
     *   The function constructs a prompt based on the entire conversation history provided by the frontend.
     *   The function uses a `for` loop to iterate over the streaming response from the AI and `yields` each piece back to the `routes.py` generator.
 
-This creates a continuous flow of data from the AI to the user's screen, making the application feel instantaneous.
+## 9. LINE Bot Integration Strategy
 
-### 8.2 Key Code Snippets
+To expand the application's reach, a LINE bot integration will be developed. The chosen strategy is to **integrate the LINE bot within the existing single project** (Option 1 from the feasibility analysis).
+
+### 9.1 Architectural Implications
+
+-   **`gateway-service`**: This service will be extended to act as the primary handler for LINE webhook events. It will include:
+    -   A new dedicated endpoint to receive incoming messages and events from the LINE Messaging API.
+    -   Integration of a LINE Messaging API SDK (e.g., a Node.js library) to parse incoming messages and construct replies.
+    -   Logic to forward LINE user messages to the `chatbot-service` for AI processing.
+    -   Logic to send AI-generated responses back to the LINE Messaging API.
+-   **`chatbot-service`**: The core AI translation logic, including conversation history management, will be fully reused without significant modifications.
+-   **`user-service`**: This service will be adapted to manage LINE user IDs. This may involve mapping LINE user IDs to existing user accounts or storing them as primary identifiers for LINE-specific interactions.
+-   **`frontend-service`**: The existing web frontend will continue to function independently. The LINE chat interface will serve as the new frontend for LINE users.
+
+This approach maximizes code reuse, centralizes management, and ensures consistent core logic across both web and LINE platforms.
 
 **`ai_handler.py`: Requesting the stream from Gemini (with conversation history)**
 ```python

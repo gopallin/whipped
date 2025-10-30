@@ -42,5 +42,6 @@ To ensure a highly responsive user experience, the application uses an end-to-en
     -   **Backend (`chatbot-service`):** Use `stream=True` when calling the Gemini API and use a generator (`yield`) to stream the response through a Flask `Response` object.
     -   **Frontend (`frontend-service`):** Use the `fetch` API to read the streaming response body and update the UI dynamically as new data chunks are received.
 -   **Guideline:** When adding new AI-powered features, this streaming pattern should be the default choice to maintain a high-quality user experience.
+-   **Multi-platform Consideration:** When contributing to services, especially the `gateway-service`, consider the implications for both the web application and integrated platforms like the LINE bot to ensure consistent functionality and user experience.
 
 By following these guidelines, we will build a robust and scalable application together.
